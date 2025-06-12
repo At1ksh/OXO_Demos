@@ -4,6 +4,8 @@ from PIL import Image
 
 def tyre_yolo():
     st.write("Upload up to four photos for YOLO processing. The results will be shown below each image.")
+    
+    modelselect=st.selectbox('Select car model',['Autobiography','HSE'])
 
     model = YOLO("my_model.pt")
 
