@@ -3,6 +3,7 @@ import cv2
 from PIL import Image
 from TyreDetection.tyredetection import tyre_yolo
 from smilelinedetection.smiledetector import smile_yolo
+from steeringwheeldetection.steeringwheeldetector import steeringwheel_yolo
 
 def main():
     st.set_page_config(page_title="OXO Checking in CAL Line", page_icon="🔍", layout="wide")
@@ -19,13 +20,15 @@ def main():
 
     component = st.selectbox(
         "Select the car component to OXO check:",
-        ["Smile line", "Tyres", "Interior seats", "Speaker system", "Car lettering", "Bonnet color"]
+        ["Smile line", "Tyres", "Interior seats", "Speaker system", "Car lettering", "Bonnet color","Steering Wheel"]
     )
 
     if component == "Tyres":
         tyre_yolo()
     elif component == "Smile line":
         smile_yolo()
+    elif component == "Steering Wheel":
+        steeringwheel_yolo()
     else:
         st.info("OXO checking for this component is being worked on right now.")
 
