@@ -2,6 +2,7 @@ import streamlit as st
 import cv2
 from PIL import Image
 from TyreDetection.tyredetection import tyre_yolo
+from FrontDoorFinisherDetection.frontdoorfinisherdetector import fdr_finisher_ocr
 from smilelinedetection.smiledetector import smile_yolo
 from treadplatedetection.treadplatedetector import treadplate_ocr
 from steeringwheeldetection.steeringwheeldetector import steeringwheel_yolo
@@ -21,7 +22,7 @@ def main():
 
     component = st.selectbox(
         "Select the car component to OXO check:",
-        ["Smile line", "Tyres", "Interior seats", "Speaker system", "Car lettering","Treadplate", "Bonnet color","Steering Wheel"]
+        ["Smile line", "Tyres", "Interior seats", "Speaker system", "Car lettering","Treadplate","Front Door Finisher","Steering Wheel"]
     )
 
     if component == "Tyres":
@@ -32,6 +33,8 @@ def main():
         steeringwheel_yolo()
     elif component == "Treadplate":
         treadplate_ocr()
+    elif component == "Front Door Finisher":
+        fdr_finisher_ocr()
     else:
         st.info("OXO checking for this component is being worked on right now.")
 

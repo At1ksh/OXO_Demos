@@ -8,8 +8,8 @@ from fuzzywuzzy import fuzz
 import tempfile
 
 
-def treadplate_ocr():
-    st.markdown("<h2 style='color:#2e6c80;'>🛡️ Treadplate Text Detection</h2>", unsafe_allow_html=True)
+def fdr_finisher_ocr():
+    st.markdown("<h2 style='color:#2e6c80;'>🛡️ Front Door Finisher Detection</h2>", unsafe_allow_html=True)
     target_choice = st.selectbox("Choose expected class:", ["AutoBiography", "HSE"])
 
     # === Column Setup ===
@@ -21,9 +21,9 @@ def treadplate_ocr():
 
     col1.write("1")
     ref_image_path = (
-        r"C:\Krishna\Jaguar\Writteninterior\5.jpg"
+        r"C:\Krishna\Jaguar\FrontDoorFinisher\4.jpg"
         if target_choice == "AutoBiography"
-        else r"C:\Krishna\Jaguar\Writteninterior\1_landscape.jpg"
+        else r"C:\Krishna\Jaguar\FrontDoorFinisher\2.jpg"
     )
     col2.image(ref_image_path, caption="Expected Format", use_column_width=True)
 
@@ -58,8 +58,7 @@ def treadplate_ocr():
 
             # Fuzzy match to both targets
             score_auto = fuzz.ratio(combined_text, "AutoBiography")
-            score_hse = fuzz.ratio(combined_text, "Range Rover")
-            score = max(score_auto, score_hse)
+            score = score_auto
 
             if score > best_score:
                 best_score = score
@@ -67,16 +66,16 @@ def treadplate_ocr():
                 best_text = combined_text
 
         best_rotated = rotate_image(image, best_angle)
-        return best_rotated  
+        return best_rotated
 
     image_file = st.file_uploader("Upload your target image:", type=['jpg', 'jpeg', 'png'])
+
 
     if image_file:
         # Save temporarily
         temp_file = tempfile.NamedTemporaryFile(delete=False)
         temp_file.write(image_file.read())
         temp_input_path = temp_file.name
-
         
 
         with st.spinner("🔍 Processing image..."):
@@ -85,33 +84,23 @@ def treadplate_ocr():
 
             # Step 2: Convert to RGB for display
             straightened_rgb = cv2.cvtColor(straightened_image, cv2.COLOR_BGR2RGB)
+            placeholder_uploaded.image(straightened_rgb, caption="Straightened Image", use_column_width=True)
 
             # Step 3: OCR again (if you want bounding boxes)
             reader = easyocr.Reader(['en'])
             results = reader.readtext(straightened_image)
-
-            # Step 4: Draw bounding boxes
-            for (bbox, text, prob) in results:
-                (top_left, _, bottom_right, _) = bbox
-                top_left = tuple(map(int, top_left))
-                bottom_right = tuple(map(int, bottom_right))
-                cv2.rectangle(straightened_rgb, top_left, bottom_right, (0, 255, 0), 2)
-                cv2.putText(straightened_rgb, text, top_left, cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
-
-            # Step 5: Combine text and display
-            combined_text = " ".join([text for (_, text, _) in results])
-            placeholder_uploaded.image(straightened_rgb, caption="Uploaded Image", use_column_width=True)
-
-            # Step 6: Fuzzy match
-            score_auto = fuzz.ratio(combined_text, "AutoBiography")
-            score_hse = fuzz.ratio(combined_text, "Range Rover")
-
-            if target_choice == "AutoBiography":
-                final_result = "✅ OK" if score_auto > score_hse else "❌ Not OK"
-            else:  # HSE
-                final_result = "✅ OK" if score_hse > score_auto else "❌ Not OK"
-
+            
+            
+           # st.write(results)
+            
+            if len(results) > 0:
+                final_result="✅ OK" if target_choice=="AutoBiography" else "❌ Not OK"
+            else:
+                final_result = "✅ OK" if target_choice == "HSE" else "❌ Not OK"
+            
             if "OK" in final_result:
                 placeholder_result.success(final_result)
             else:
                 placeholder_result.error(final_result)
+
+                
